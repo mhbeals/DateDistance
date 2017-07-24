@@ -109,12 +109,31 @@ int enumerateNegativeMonth_1752(int month) // months into days into the year
 {
 	switch (month)
 	{
+	case 1: return -116;
+	case 2: return -187;
 	case 3: return -156;
 	case 4: return -126;
 	case 5: return -95;
 	case 6: return -65;
 	case 7: return -34;
 	case 8: return -3;
+	}
+}
+
+int enumerateNegativeMonth_1751(int month) // months into days into the year
+{
+	switch (month)
+	{
+	case 3: return -422;
+	case 4: return -392;
+	case 5: return -361;
+	case 6: return -331;
+	case 7: return -300;
+	case 8: return -269;
+	case 9: return -239;
+	case 10: return -208;
+	case 11: return -178;
+	case 12: return -147;
 	}
 }
 
@@ -230,7 +249,7 @@ int enumerateDate(int inputYear, int inputMonth, int inputDay)
 		}
 	}
 
-	// If the date is in 1752 (the short year)
+	// If the date is in 1752 (the year with 11 days missing)
 	if (inputYear == 1752 && (inputMonth < 9 || inputMonth == 9 && inputDay < 3))
 	{
 		// If it is in September
@@ -250,28 +269,38 @@ int enumerateDate(int inputYear, int inputMonth, int inputDay)
 		// If it is before September
 		else
 		{
-			// If it is April - September
-			if (inputMonth > 3)
+			return (enumerateNegativeMonth_1752(inputMonth) + enumerateCurrentNegativeMonth(inputMonth, true) + inputDay);
+		}
+	}
+
+	// If it is 1751 (the short year)
+	else if (inputYear == 1751)
+	{
+		// If it is April - December
+		if (inputMonth > 3)
+		{
+			return (enumerateNegativeMonth_1751(inputMonth) + enumerateCurrentNegativeMonth(inputMonth, false) + inputDay);
+		}
+		// If it is March
+		else if (inputMonth == 3)
+		{
+			// If it is after the 25th (the new year and a very short 'month' of 7 days)
+			if (inputDay >= 25)
 			{
-				return (enumerateNegativeMonth_1752(inputMonth) + enumerateCurrentNegativeMonth(inputMonth, false) + inputDay);
+				return (-453 + inputDay);
 			}
-			// If it is March
-			else if (inputMonth == 3)
+			else
 			{
-				// If it is after the 25th (the new year and a very short 'month' of 7 days)
-				if (inputDay >= 25)
-				{
-					return (-187 + inputDay);
-				}
+				error = 1;
 			}
 		}
 	}
 
-	// If it is an old style date (1155 < x < 1752)
-	else if (inputYear > 1154 && inputYear < 1752)
+	// If it is an old style date (1155 < x < 1751)
+	else if (inputYear > 1154 && inputYear < 1751)
 	{
 		// Go back 161 days, plus 365 days per year before 1752, plus a leap day for each leap year before 1752
-		enumeratedDays = -161 + ((1752 - inputYear) * 365) + ((1752 - inputYear) / 4);
+		enumeratedDays = -429 + ((1751 - inputYear) * 365) + ((1751 - inputYear) / 4);
 
 		// If it is a leap year
 		if (inputYear % 4 == 0)
